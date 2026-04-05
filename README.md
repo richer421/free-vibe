@@ -1,103 +1,83 @@
-# FreeVibe Backend Template
+# FreeVibe
 
-This repository is the backend base template and now also contains the `freevibe` CLI.
+FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
+- 以 `git submodule` 方式组织大项目模块
+- 从远程仓库拉取模板并进行基础渲染
 
-## FreeVibe CLI
+## 快速开始
 
-Build CLI:
+### 1) 安装 CLI（最新版本）
+
 ```bash
+curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | bash
+```
+
+### 2) 更新 CLI（升级到最新版本）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | bash -s -- --update
+```
+
+### 3) 初始化一个父项目（submodule 结构）
+
+```bash
+~/.local/bin/freevibe init my-monorepo --backend-name order-service
+```
+
+初始化后会生成：
+- `freevibe.modules.yaml`：模块注册表
+- `.gitmodules`：子模块定义
+- 根 `Makefile`：`modules/status/pull`
+
+## 常用命令
+
+```bash
+# 查看版本
+freevibe version
+
+# 新增模块
+freevibe add --name payment-service --type backend
+
+# 移除模块
+freevibe remove payment-service
+```
+
+## 安装脚本参数
+
+```bash
+# 指定版本安装
+curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | \
+  bash -s -- --version v0.1.0
+
+# 指定安装目录
+curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | \
+  bash -s -- --install-dir /usr/local/bin
+```
+
+## Release 版本管理
+
+本仓库采用 `SemVer`（`vX.Y.Z`）+ GitHub Release：
+
+1. 本地提交完成后打 tag：
+```bash
+./scripts/release.sh v0.1.0
+```
+
+2. 推送 tag 后，GitHub Actions 自动执行：
+- 构建 `linux/darwin` + `amd64/arm64` 二进制
+- 打包为 `freevibe_<version>_<os>_<arch>.tar.gz`
+- 发布到 GitHub Release
+
+工作流文件：
+- `.github/workflows/release.yml`
+- `.goreleaser.yaml`
+
+## 本地开发
+
+```bash
+# 构建 CLI
 make build-cli
+
+# 运行帮助
 ./bin/freevibe --help
-```
-
-Initialize a parent project with submodule layout (pulls module from remote and renders it):
-```bash
-./bin/freevibe init my-monorepo \
-  --backend-name order-service \
-  --template-repo-url https://github.com/richer421/free-vibe.git
-```
-
-Add/remove modules in an existing parent project:
-```bash
-./bin/freevibe add --name payment-service --type backend
-./bin/freevibe remove payment-service
-```
-
-Generated parent project includes:
-- `freevibe.modules.yaml`: module registry
-- `Makefile`: `modules/status/pull`
-- Git submodules for each module
-
-## Kratos Base Usage
-
-## Install Kratos
-```
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-## Create a service
-```
-# Create a template project
-kratos new server
-
-cd server
-# Add a proto template
-kratos proto add api/server/server.proto
-# Generate the proto code
-kratos proto client api/server/server.proto
-# Generate the source code of service by proto file
-kratos proto server api/server/server.proto -t internal/service
-
-go generate ./...
-go build -o ./bin/ ./...
-./bin/server -conf ./configs
-```
-## Generate other auxiliary files by Makefile
-```
-# Download and update dependencies
-make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
-make api
-# Generate all files
-make all
-```
-## SQLC + MySQL（已接入默认 Greeter）
-```bash
-# 1) 准备 MySQL 表（示例 schema）
-# internal/data/greeter/sql/schema/001_greeters.sql
-
-# 2) 生成 sqlc 代码
-make sqlc
-
-# 3) 生成 sqlc + wire 并构建
-make generate
-make build
-
-# 4) 运行服务（确保 configs/config.yaml 中数据库可连通）
-./bin/free-vibe-coding -conf ./configs/config.yaml
-```
-
-关键目录：
-- `sqlc.yaml`
-- `internal/data/greeter/sql/schema`
-- `internal/data/greeter/sql/query`
-- `internal/data/gen/sqlc` (generated)
-- `internal/data/greeter/repo.go`（仓储适配，调用 sqlc）
-
-## Automated Initialization (wire)
-```
-# install wire
-go get github.com/google/wire/cmd/wire
-
-# generate wire
-cd cmd/server
-wire
-```
-
-## Docker
-```bash
-# build
-docker build -t <your-docker-image-name> .
-
-# run
-docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
 ```
