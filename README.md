@@ -13,11 +13,12 @@ curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/insta
 ```
 
 说明：再次执行同一条安装命令，就是升级（无需单独 update 命令）。
+如果提示 `command not found`，请重开终端或确认 `/usr/local/bin` 在 `PATH` 中。
 
 ### 2) 初始化一个父项目（submodule 结构）
 
 ```bash
-~/.local/bin/freevibe init my-monorepo --backend-name order-service
+freevibe init my-monorepo --backend-name order-service
 ```
 
 初始化后会生成：

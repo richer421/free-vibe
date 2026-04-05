@@ -3,7 +3,7 @@ set -euo pipefail
 
 REPO="${FREEVIBE_REPO:-richer421/free-vibe}"
 BINARY_NAME="${FREEVIBE_BINARY_NAME:-freevibe}"
-INSTALL_DIR="${FREEVIBE_INSTALL_DIR:-$HOME/.local/bin}"
+INSTALL_DIR="${FREEVIBE_INSTALL_DIR:-/usr/local/bin}"
 VERSION="${FREEVIBE_VERSION:-latest}"
 
 usage() {
@@ -14,7 +14,7 @@ Install or update FreeVibe CLI from GitHub Release.
 
 Options:
   --version <tag>          Version tag like v0.1.0 (default: latest)
-  --install-dir <dir>      Install directory (default: ~/.local/bin)
+  --install-dir <dir>      Install directory (default: /usr/local/bin)
   --repo <owner/name>      GitHub repo (default: richer421/free-vibe)
   -h, --help               Show this help
 USAGE
@@ -86,6 +86,9 @@ current_binary="${INSTALL_DIR}/${BINARY_NAME}"
 current_version=""
 if [[ -x "$current_binary" ]]; then
   current_version="$("$current_binary" version 2>/dev/null | awk '{print $3}' || true)"
+elif command -v "$BINARY_NAME" >/dev/null 2>&1; then
+  current_binary="$(command -v "$BINARY_NAME")"
+  current_version="$("$current_binary" version 2>/dev/null | awk '{print $3}' || true)"
 fi
 
 if [[ -n "$current_version" ]]; then
@@ -103,8 +106,20 @@ if ! curl -fsSL "$download_url" -o "$tmp_dir/$asset"; then
 fi
 
 tar -xzf "$tmp_dir/$asset" -C "$tmp_dir"
-mkdir -p "$INSTALL_DIR"
-install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
+if [[ ! -d "$INSTALL_DIR" ]]; then
+  parent_dir="$(dirname "$INSTALL_DIR")"
+  if [[ -w "$parent_dir" ]]; then
+    mkdir -p "$INSTALL_DIR"
+  else
+    sudo mkdir -p "$INSTALL_DIR"
+  fi
+fi
+
+if [[ -w "$INSTALL_DIR" ]]; then
+  install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
+else
+  sudo install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
+fi
 
 echo "[freevibe] ready: $INSTALL_DIR/$BINARY_NAME"
 if ! command -v "$BINARY_NAME" >/dev/null 2>&1; then
