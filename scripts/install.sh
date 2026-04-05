@@ -53,19 +53,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-precheck_cmd() {
-  local cmd="$1"
-  if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "missing required command: $cmd" >&2
-    exit 1
-  fi
-}
-
-precheck_cmd curl
-precheck_cmd tar
-precheck_cmd awk
-precheck_cmd install
-
 os="$(uname -s | tr '[:upper:]' '[:lower:]')"
 case "$os" in
   darwin|linux) ;;

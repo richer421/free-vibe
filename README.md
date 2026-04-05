@@ -6,12 +6,6 @@ FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
 
 ## 快速开始
 
-### 0) 前置条件（预检查）
-
-```bash
-command -v git >/dev/null && command -v curl >/dev/null && command -v tar >/dev/null
-```
-
 ### 1) 安装 CLI（最新版本）
 
 ```bash
@@ -70,24 +64,6 @@ curl -fsSL https://github.com/richer421/free-vibe/releases/download/v0.1.3/insta
 curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | \
   bash -s -- --install-dir /usr/local/bin
 ```
-
-## Release 版本管理
-
-本仓库采用 `SemVer`（`vX.Y.Z`）+ GitHub Release：
-
-1. 本地提交完成后打 tag：
-```bash
-./scripts/release.sh v0.1.0
-```
-
-2. 推送 tag 后，GitHub Actions 自动执行：
-- 构建 `linux/darwin` + `amd64/arm64` 二进制
-- 打包为 `freevibe_<tag>_<os>_<arch>.tar.gz`（例如 `freevibe_v0.1.1_darwin_arm64.tar.gz`）
-- 发布到 GitHub Release
-
-工作流文件：
-- `.github/workflows/release.yml`
-- `.goreleaser.yaml`
 
 ## 本地开发
 
