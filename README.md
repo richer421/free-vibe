@@ -6,6 +6,12 @@ FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
 
 ## 快速开始
 
+### 0) 前置条件（预检查）
+
+```bash
+command -v git >/dev/null && command -v curl >/dev/null && command -v tar >/dev/null
+```
+
 ### 1) 安装 CLI（最新版本）
 
 ```bash
@@ -13,9 +19,14 @@ curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/insta
 ```
 
 说明：再次执行同一条安装命令，就是升级（无需单独 update 命令）。
-如果提示 `command not found`，请重开终端或确认 `/usr/local/bin` 在 `PATH` 中。
 
-### 2) 初始化一个父项目（submodule 结构）
+### 2) 验证安装
+
+```bash
+freevibe version
+```
+
+### 3) 初始化一个父项目（submodule 结构）
 
 ```bash
 freevibe init my-monorepo --backend-name order-service
@@ -25,6 +36,13 @@ freevibe init my-monorepo --backend-name order-service
 - `freevibe.modules.yaml`：模块注册表
 - `.gitmodules`：子模块定义
 - 根 `Makefile`：`modules/status/pull`
+
+### 4) 验证初始化
+
+```bash
+cd my-monorepo
+git submodule status
+```
 
 ## 常用命令
 
@@ -39,19 +57,19 @@ freevibe add --name payment-service --type backend
 freevibe remove payment-service
 ```
 
-## 安装脚本参数（含指定版本安装）
+## 指定版本安装
 
 ```bash
-# 指定版本安装
-curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | \
-  bash -s -- --version v0.1.0
+# 直接安装 v0.1.3
+curl -fsSL https://github.com/richer421/free-vibe/releases/download/v0.1.3/install.sh | bash
+```
 
+可选参数（高级）：
+```bash
 # 指定安装目录
 curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | \
   bash -s -- --install-dir /usr/local/bin
 ```
-
-说明：`--version` 必须使用 tag 形式（`vX.Y.Z`）。
 
 ## Release 版本管理
 

@@ -4,7 +4,9 @@ set -euo pipefail
 REPO="${FREEVIBE_REPO:-richer421/free-vibe}"
 BINARY_NAME="${FREEVIBE_BINARY_NAME:-freevibe}"
 INSTALL_DIR="${FREEVIBE_INSTALL_DIR:-/usr/local/bin}"
-VERSION="${FREEVIBE_VERSION:-latest}"
+DEFAULT_VERSION="${FREEVIBE_DEFAULT_VERSION:-latest}"
+VERSION="${FREEVIBE_VERSION:-$DEFAULT_VERSION}"
+FORCE=false
 
 usage() {
   cat <<USAGE
@@ -14,6 +16,7 @@ Install or update FreeVibe CLI from GitHub Release.
 
 Options:
   --version <tag>          Version tag like v0.1.0 (default: latest)
+  --force                  Reinstall even if same version already exists
   --install-dir <dir>      Install directory (default: /usr/local/bin)
   --repo <owner/name>      GitHub repo (default: richer421/free-vibe)
   -h, --help               Show this help
@@ -25,6 +28,10 @@ while [[ $# -gt 0 ]]; do
     --version)
       VERSION="$2"
       shift 2
+      ;;
+    --force)
+      FORCE=true
+      shift
       ;;
     --install-dir)
       INSTALL_DIR="$2"
@@ -45,6 +52,19 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
+
+precheck_cmd() {
+  local cmd="$1"
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "missing required command: $cmd" >&2
+    exit 1
+  fi
+}
+
+precheck_cmd curl
+precheck_cmd tar
+precheck_cmd awk
+precheck_cmd install
 
 os="$(uname -s | tr '[:upper:]' '[:lower:]')"
 case "$os" in
@@ -92,6 +112,11 @@ elif command -v "$BINARY_NAME" >/dev/null 2>&1; then
 fi
 
 if [[ -n "$current_version" ]]; then
+  target_version="${VERSION#v}"
+  if [[ "$FORCE" != "true" && "$current_version" == "$target_version" ]]; then
+    echo "[freevibe] already installed: ${current_version} (use --force to reinstall)"
+    exit 0
+  fi
   echo "[freevibe] updating ${BINARY_NAME}: ${current_version} -> ${VERSION} (${os}/${arch})"
 else
   echo "[freevibe] installing ${BINARY_NAME} ${VERSION} (${os}/${arch})"
