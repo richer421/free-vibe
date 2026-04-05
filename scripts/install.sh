@@ -80,38 +80,24 @@ if [[ "$VERSION" == "latest" ]]; then
   fi
 fi
 
+if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+  echo "invalid version: $VERSION (expected vX.Y.Z)" >&2
+  exit 1
+fi
+
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
 echo "[freevibe] ${MODE} ${VERSION} (${os}/${arch})"
-asset_candidates=(
-  "${BINARY_NAME}_${VERSION}_${os}_${arch}.tar.gz"
-)
-# Backward compatibility for early releases using non-tag version text.
-if [[ "$VERSION" == v* ]]; then
-  asset_candidates+=("${BINARY_NAME}_${VERSION#v}_${os}_${arch}.tar.gz")
-fi
-
-downloaded_asset=""
-for candidate in "${asset_candidates[@]}"; do
-  download_url="https://github.com/${REPO}/releases/download/${VERSION}/${candidate}"
-  echo "[freevibe] downloading: ${download_url}"
-  if curl -fsSL "$download_url" -o "$tmp_dir/$candidate" 2>/dev/null; then
-    downloaded_asset="$candidate"
-    break
-  fi
-done
-
-if [[ -z "$downloaded_asset" ]]; then
-  echo "[freevibe] no matching release asset found for ${VERSION} (${os}/${arch})" >&2
-  echo "[freevibe] tried:" >&2
-  for candidate in "${asset_candidates[@]}"; do
-    echo "  - ${candidate}" >&2
-  done
+asset="${BINARY_NAME}_${VERSION}_${os}_${arch}.tar.gz"
+download_url="https://github.com/${REPO}/releases/download/${VERSION}/${asset}"
+echo "[freevibe] downloading: ${download_url}"
+if ! curl -fsSL "$download_url" -o "$tmp_dir/$asset"; then
+  echo "[freevibe] release asset not found: $asset" >&2
   exit 1
 fi
 
-tar -xzf "$tmp_dir/$downloaded_asset" -C "$tmp_dir"
+tar -xzf "$tmp_dir/$asset" -C "$tmp_dir"
 mkdir -p "$INSTALL_DIR"
 install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
 

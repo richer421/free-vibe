@@ -54,6 +54,8 @@ curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/in
   bash -s -- --install-dir /usr/local/bin
 ```
 
+说明：`--version` 必须使用 tag 形式（`vX.Y.Z`）。
+
 ## Release 版本管理
 
 本仓库采用 `SemVer`（`vX.Y.Z`）+ GitHub Release：
