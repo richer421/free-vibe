@@ -36,7 +36,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tmp_install="$(mktemp)"
+          tmp_dir="$(mktemp -d)"
+          tmp_install="${tmp_dir}/install.sh"
           sed "s/FREEVIBE_DEFAULT_VERSION:-latest/FREEVIBE_DEFAULT_VERSION:-${GITHUB_REF_NAME}/g" scripts/install.sh > "${tmp_install}"
           chmod +x "${tmp_install}"
-          gh release upload "${GITHUB_REF_NAME}" "${tmp_install}#install.sh" --clobber
+          gh release upload "${GITHUB_REF_NAME}" "${tmp_install}" --clobber
