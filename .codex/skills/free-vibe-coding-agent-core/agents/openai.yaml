@@ -1,0 +1,3 @@
+interface:
+  display_name: "Free Vibe Agent Core"
+  short_description: "Skill routing proxy for this repository"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Kratos Layout Best Practices"
+  short_description: "Enforce domain-homomorphic Kratos module layout"

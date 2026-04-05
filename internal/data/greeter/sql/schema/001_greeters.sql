@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS greeters (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  hello VARCHAR(255) NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_greeters_hello (hello)
+);

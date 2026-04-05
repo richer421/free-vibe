@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    schema: "internal/data/greeter/sql/schema"
+    queries: "internal/data/greeter/sql/query"
+    gen:
+      go:
+        package: "sqlcgen"
+        out: "internal/data/gen/sqlc"
+        sql_package: "database/sql"
+        emit_json_tags: true
+        emit_db_tags: true
