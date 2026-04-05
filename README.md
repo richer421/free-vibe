@@ -9,16 +9,12 @@ FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
 ### 1) 安装 CLI（最新版本）
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | bash
+curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | bash
 ```
 
-### 2) 更新 CLI（升级到最新版本）
+说明：再次执行同一条安装命令，就是升级（无需单独 update 命令）。
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | bash -s -- --update
-```
-
-### 3) 初始化一个父项目（submodule 结构）
+### 2) 初始化一个父项目（submodule 结构）
 
 ```bash
 ~/.local/bin/freevibe init my-monorepo --backend-name order-service
@@ -42,15 +38,15 @@ freevibe add --name payment-service --type backend
 freevibe remove payment-service
 ```
 
-## 安装脚本参数
+## 安装脚本参数（含指定版本安装）
 
 ```bash
 # 指定版本安装
-curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | \
+curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | \
   bash -s -- --version v0.1.0
 
 # 指定安装目录
-curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/install.sh | \
+curl -fsSL https://github.com/richer421/free-vibe/releases/latest/download/install.sh | \
   bash -s -- --install-dir /usr/local/bin
 ```
 

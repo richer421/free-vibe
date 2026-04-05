@@ -4,7 +4,6 @@ set -euo pipefail
 REPO="${FREEVIBE_REPO:-richer421/free-vibe}"
 BINARY_NAME="${FREEVIBE_BINARY_NAME:-freevibe}"
 INSTALL_DIR="${FREEVIBE_INSTALL_DIR:-$HOME/.local/bin}"
-MODE="install"
 VERSION="${FREEVIBE_VERSION:-latest}"
 
 usage() {
@@ -14,7 +13,6 @@ Usage: install.sh [options]
 Install or update FreeVibe CLI from GitHub Release.
 
 Options:
-  --update                 Update mode (same install action with update message)
   --version <tag>          Version tag like v0.1.0 (default: latest)
   --install-dir <dir>      Install directory (default: ~/.local/bin)
   --repo <owner/name>      GitHub repo (default: richer421/free-vibe)
@@ -24,10 +22,6 @@ USAGE
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --update)
-      MODE="update"
-      shift
-      ;;
     --version)
       VERSION="$2"
       shift 2
@@ -88,7 +82,18 @@ fi
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
-echo "[freevibe] ${MODE} ${VERSION} (${os}/${arch})"
+current_binary="${INSTALL_DIR}/${BINARY_NAME}"
+current_version=""
+if [[ -x "$current_binary" ]]; then
+  current_version="$("$current_binary" version 2>/dev/null | awk '{print $3}' || true)"
+fi
+
+if [[ -n "$current_version" ]]; then
+  echo "[freevibe] updating ${BINARY_NAME}: ${current_version} -> ${VERSION} (${os}/${arch})"
+else
+  echo "[freevibe] installing ${BINARY_NAME} ${VERSION} (${os}/${arch})"
+fi
+
 asset="${BINARY_NAME}_${VERSION}_${os}_${arch}.tar.gz"
 download_url="https://github.com/${REPO}/releases/download/${VERSION}/${asset}"
 echo "[freevibe] downloading: ${download_url}"
@@ -101,7 +106,7 @@ tar -xzf "$tmp_dir/$asset" -C "$tmp_dir"
 mkdir -p "$INSTALL_DIR"
 install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
 
-echo "[freevibe] installed to: $INSTALL_DIR/$BINARY_NAME"
+echo "[freevibe] ready: $INSTALL_DIR/$BINARY_NAME"
 if ! command -v "$BINARY_NAME" >/dev/null 2>&1; then
   echo "[freevibe] hint: add to PATH -> export PATH=\"$INSTALL_DIR:\$PATH\""
 fi
