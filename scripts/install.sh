@@ -80,7 +80,8 @@ if [[ "$VERSION" == "latest" ]]; then
   fi
 fi
 
-asset="${BINARY_NAME}_${VERSION}_${os}_${arch}.tar.gz"
+asset_version="${VERSION#v}"
+asset="${BINARY_NAME}_${asset_version}_${os}_${arch}.tar.gz"
 download_url="https://github.com/${REPO}/releases/download/${VERSION}/${asset}"
 
 tmp_dir="$(mktemp -d)"
