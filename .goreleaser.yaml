@@ -23,7 +23,8 @@ archives:
       - freevibe
     formats:
       - tar.gz
-    name_template: "freevibe_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # Keep asset version text aligned with git tag (for example: v0.1.1).
+    name_template: "freevibe_{{ .Tag }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"

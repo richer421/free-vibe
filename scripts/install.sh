@@ -80,18 +80,38 @@ if [[ "$VERSION" == "latest" ]]; then
   fi
 fi
 
-asset_version="${VERSION#v}"
-asset="${BINARY_NAME}_${asset_version}_${os}_${arch}.tar.gz"
-download_url="https://github.com/${REPO}/releases/download/${VERSION}/${asset}"
-
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT
 
 echo "[freevibe] ${MODE} ${VERSION} (${os}/${arch})"
-echo "[freevibe] downloading: ${download_url}"
-curl -fL "$download_url" -o "$tmp_dir/$asset"
+asset_candidates=(
+  "${BINARY_NAME}_${VERSION}_${os}_${arch}.tar.gz"
+)
+# Backward compatibility for early releases using non-tag version text.
+if [[ "$VERSION" == v* ]]; then
+  asset_candidates+=("${BINARY_NAME}_${VERSION#v}_${os}_${arch}.tar.gz")
+fi
 
-tar -xzf "$tmp_dir/$asset" -C "$tmp_dir"
+downloaded_asset=""
+for candidate in "${asset_candidates[@]}"; do
+  download_url="https://github.com/${REPO}/releases/download/${VERSION}/${candidate}"
+  echo "[freevibe] downloading: ${download_url}"
+  if curl -fsSL "$download_url" -o "$tmp_dir/$candidate" 2>/dev/null; then
+    downloaded_asset="$candidate"
+    break
+  fi
+done
+
+if [[ -z "$downloaded_asset" ]]; then
+  echo "[freevibe] no matching release asset found for ${VERSION} (${os}/${arch})" >&2
+  echo "[freevibe] tried:" >&2
+  for candidate in "${asset_candidates[@]}"; do
+    echo "  - ${candidate}" >&2
+  done
+  exit 1
+fi
+
+tar -xzf "$tmp_dir/$downloaded_asset" -C "$tmp_dir"
 mkdir -p "$INSTALL_DIR"
 install -m 0755 "$tmp_dir/$BINARY_NAME" "$INSTALL_DIR/$BINARY_NAME"
 

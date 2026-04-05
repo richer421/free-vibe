@@ -65,7 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/richer421/free-vibe/main/scripts/in
 
 2. 推送 tag 后，GitHub Actions 自动执行：
 - 构建 `linux/darwin` + `amd64/arm64` 二进制
-- 打包为 `freevibe_<version>_<os>_<arch>.tar.gz`
+- 打包为 `freevibe_<tag>_<os>_<arch>.tar.gz`（例如 `freevibe_v0.1.1_darwin_arm64.tar.gz`）
 - 发布到 GitHub Release
 
 工作流文件：
