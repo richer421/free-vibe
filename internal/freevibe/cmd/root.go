@@ -19,13 +19,15 @@ func newRootCmd() *cobra.Command {
 		Long: `freevibe creates a parent repository with git submodules.
 
 Core flow:
-  1) freevibe init   create parent repo and bootstrap first module
-  2) freevibe add    add one module as submodule
-  3) freevibe remove remove one module`,
+  1) freevibe template ls  list available templates
+  2) freevibe init         create parent repo and bootstrap first module
+  3) freevibe add          add one module as submodule
+  4) freevibe remove       remove one module`,
 		SilenceUsage: true,
 	}
 
 	rootCmd.AddCommand(
+		newTemplateCmd(),
 		newInitCmd(),
 		newAddCmd(),
 		newRemoveCmd(),

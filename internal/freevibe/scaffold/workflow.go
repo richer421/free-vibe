@@ -17,6 +17,13 @@ func InitProject(opts InitOptions) error {
 	if strings.TrimSpace(opts.RepoURL) == "" {
 		return fmt.Errorf("repo URL is required")
 	}
+	if strings.TrimSpace(opts.Template) == "" {
+		return fmt.Errorf("template is required")
+	}
+	templateSpec, err := ResolveTemplate(opts.Template)
+	if err != nil {
+		return err
+	}
 
 	moduleName, err := resolveModuleName(opts.ModuleName, opts.RepoURL)
 	if err != nil {
@@ -43,9 +50,10 @@ func InitProject(opts InitOptions) error {
 
 	return AddModule(opts.ProjectPath, AddOptions{
 		Name:            moduleName,
-		Type:            ModuleTypeBackend,
+		Type:            templateSpec.DefaultModuleType,
 		RepoURL:         opts.RepoURL,
 		ProjectName:     opts.ProjectName,
+		Template:        opts.Template,
 		TemplateRepoURL: opts.TemplateRepoURL,
 		Prompt:          opts.Prompt,
 	})
@@ -61,16 +69,22 @@ func AddModule(projectRoot string, opts AddOptions) error {
 	}
 
 	moduleType := strings.TrimSpace(opts.Type)
-	if moduleType == "" {
-		moduleType = ModuleTypeBackend
-	}
-	if moduleType != ModuleTypeBackend && moduleType != ModuleTypeFrontend {
-		return fmt.Errorf("unsupported module type: %s", moduleType)
-	}
-
 	repoURL := strings.TrimSpace(opts.RepoURL)
 	if repoURL == "" {
 		return fmt.Errorf("repo URL is required")
+	}
+	if strings.TrimSpace(opts.Template) == "" {
+		return fmt.Errorf("template is required")
+	}
+	templateSpec, err := ResolveTemplate(opts.Template)
+	if err != nil {
+		return err
+	}
+	if moduleType == "" {
+		moduleType = templateSpec.DefaultModuleType
+	}
+	if moduleType != ModuleTypeBackend && moduleType != ModuleTypeFrontend {
+		return fmt.Errorf("unsupported module type: %s", moduleType)
 	}
 
 	registry, err := loadRegistry(projectRoot)
@@ -85,6 +99,7 @@ func AddModule(projectRoot string, opts AddOptions) error {
 
 	if err := ensureModuleRepoReady(repoPreparation{
 		RepoURL:         repoURL,
+		Template:        opts.Template,
 		TemplateRepoURL: opts.TemplateRepoURL,
 		Data: renderData{
 			ProjectName: opts.ProjectName,

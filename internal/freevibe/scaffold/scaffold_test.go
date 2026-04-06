@@ -79,6 +79,7 @@ func TestInitProjectBootstrapsEmptyRepoUsingDerivedModuleName(t *testing.T) {
 		ProjectName:     "demo-monorepo",
 		ProjectPath:     projectRoot,
 		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
 		TemplateRepoURL: templateRepo,
 	})
 	if err != nil {
@@ -125,6 +126,7 @@ func TestAddModuleAttachesExistingRepoWhenUserAnswersNo(t *testing.T) {
 		ProjectName:     "attach-parent",
 		Type:            ModuleTypeBackend,
 		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
 		TemplateRepoURL: templateRepo,
 		Prompt: func(repoURL, branch string) (bool, error) {
 			if repoURL != remoteRepo {
@@ -173,6 +175,7 @@ func TestAddModuleBootstrapsExistingRepoWhenUserAnswersYes(t *testing.T) {
 		ProjectName:     "bootstrap-parent",
 		Type:            ModuleTypeBackend,
 		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
 		TemplateRepoURL: templateRepo,
 		Prompt: func(repoURL, branch string) (bool, error) {
 			return true, nil
@@ -222,19 +225,20 @@ func createTemplateRepo(t *testing.T, baseDir string) string {
 	t.Helper()
 
 	templateRoot := filepath.Join(baseDir, "free-vibe-coding-template")
+	kratosRoot := filepath.Join(templateRoot, "templates", "kratos")
 	if err := os.MkdirAll(templateRoot, 0o755); err != nil {
 		t.Fatalf("mkdir template: %v", err)
 	}
 	runTestCmd(t, templateRoot, "git", "init", "-b", "main")
 	runTestCmd(t, templateRoot, "git", "config", "user.email", "test@example.com")
 	runTestCmd(t, templateRoot, "git", "config", "user.name", "test")
-	if err := os.MkdirAll(filepath.Join(templateRoot, "configs"), 0o755); err != nil {
-		t.Fatalf("mkdir configs: %v", err)
+	if err := os.MkdirAll(filepath.Join(kratosRoot, "configs"), 0o755); err != nil {
+		t.Fatalf("mkdir template subdir: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(templateRoot, "module.txt"), []byte("module=__MODULE_NAME__\nproject=__PROJECT_NAME__\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(kratosRoot, "module.txt"), []byte("module=__MODULE_NAME__\nproject=__PROJECT_NAME__\n"), 0o644); err != nil {
 		t.Fatalf("write template module.txt: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(templateRoot, "free-vibe-coding.txt"), []byte("free-vibe-coding\n"), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(kratosRoot, "free-vibe-coding.txt"), []byte("free-vibe-coding\n"), 0o644); err != nil {
 		t.Fatalf("write template renamed file: %v", err)
 	}
 	runTestCmd(t, templateRoot, "git", "add", ".")

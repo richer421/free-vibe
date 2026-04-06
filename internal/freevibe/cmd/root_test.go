@@ -16,7 +16,7 @@ func TestInitRequiresRepoFlag(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected init without --repo to fail")
 	}
-	if !strings.Contains(err.Error(), "required flag(s) \"repo\" not set") {
+	if !strings.Contains(err.Error(), "required flag(s) \"repo\", \"template\" not set") {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
@@ -31,7 +31,7 @@ func TestAddRequiresRepoFlag(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected add without --repo to fail")
 	}
-	if !strings.Contains(err.Error(), "required flag(s) \"repo\" not set") {
+	if !strings.Contains(err.Error(), "required flag(s) \"repo\", \"template\" not set") {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }

@@ -11,8 +11,9 @@ import (
 )
 
 func newInitCmd() *cobra.Command {
-	var backendName string
+	var moduleName string
 	var repoURL string
+	var template string
 	var force bool
 
 	cmd := &cobra.Command{
@@ -42,8 +43,9 @@ func newInitCmd() *cobra.Command {
 			err = scaffold.InitProject(scaffold.InitOptions{
 				ProjectName: projectName,
 				ProjectPath: projectPath,
-				ModuleName:  backendName,
+				ModuleName:  moduleName,
 				RepoURL:     repoURL,
+				Template:    template,
 				Prompt:      scaffold.NewConsolePrompt(cmd.InOrStdin(), cmd.OutOrStdout()),
 			})
 			if err != nil {
@@ -57,9 +59,11 @@ func newInitCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&backendName, "backend-name", "", "Initial backend module name (defaults to repo name)")
+	cmd.Flags().StringVar(&moduleName, "name", "", "Initial module name (defaults to repo name)")
 	cmd.Flags().StringVar(&repoURL, "repo", "", "Target module repository URL")
+	cmd.Flags().StringVar(&template, "template", "", "Template name")
 	cmd.Flags().BoolVarP(&force, "force", "f", false, "Continue even if target directory exists")
 	_ = cmd.MarkFlagRequired("repo")
+	_ = cmd.MarkFlagRequired("template")
 	return cmd
 }

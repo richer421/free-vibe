@@ -11,6 +11,7 @@ import (
 
 type repoPreparation struct {
 	RepoURL         string
+	Template        string
 	TemplateRepoURL string
 	Data            renderData
 	Prompt          PromptFunc
@@ -79,6 +80,10 @@ func ensureModuleRepoReady(opts repoPreparation) error {
 	if templateRepoURL == "" {
 		templateRepoURL = DefaultTemplateRepoURL
 	}
+	templateName := strings.TrimSpace(opts.Template)
+	if _, err := ResolveTemplateSubdir(templateName); err != nil {
+		return err
+	}
 
 	repoDir, err := os.MkdirTemp("", "freevibe-module-repo-*")
 	if err != nil {
@@ -109,7 +114,7 @@ func ensureModuleRepoReady(opts repoPreparation) error {
 		}
 	}
 
-	return bootstrapRepo(repoDir, defaultBranch, hasCommits, templateRepoURL, opts.Data)
+	return bootstrapRepo(repoDir, defaultBranch, hasCommits, templateRepoURL, templateName, opts.Data)
 }
 
 func detectDefaultBranch(repoDir string) (string, error) {
@@ -136,7 +141,7 @@ func detectDefaultBranch(repoDir string) (string, error) {
 	return "main", nil
 }
 
-func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoURL string, data renderData) error {
+func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoURL, templateName string, data renderData) error {
 	if err := checkoutBranch(repoDir, defaultBranch, hasCommits); err != nil {
 		return err
 	}
@@ -154,7 +159,7 @@ func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoU
 		return fmt.Errorf("clone template repo %s: %w", templateRepoURL, err)
 	}
 
-	templateRoot, err := resolveTemplateRoot(templateDir)
+	templateRoot, err := resolveTemplateRoot(templateDir, templateName)
 	if err != nil {
 		return err
 	}
@@ -186,16 +191,17 @@ func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoU
 	return nil
 }
 
-func resolveTemplateRoot(templateRepoDir string) (string, error) {
-	templateSubdir := filepath.Join(templateRepoDir, DefaultTemplateSubdir)
-	if st, err := os.Stat(templateSubdir); err == nil && st.IsDir() {
-		return templateSubdir, nil
+func resolveTemplateRoot(templateRepoDir, templateName string) (string, error) {
+	templateSubdir, err := ResolveTemplateSubdir(templateName)
+	if err != nil {
+		return "", err
 	}
 
-	if st, err := os.Stat(templateRepoDir); err == nil && st.IsDir() {
-		return templateRepoDir, nil
+	templateRoot := filepath.Join(templateRepoDir, templateSubdir)
+	if st, err := os.Stat(templateRoot); err == nil && st.IsDir() {
+		return templateRoot, nil
 	}
-	return "", fmt.Errorf("template root not found in %s", templateRepoDir)
+	return "", fmt.Errorf("template %s not found in %s", templateName, templateRepoDir)
 }
 
 func checkoutBranch(repoDir, defaultBranch string, hasCommits bool) error {

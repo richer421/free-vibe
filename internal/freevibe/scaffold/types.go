@@ -1,17 +1,42 @@
 package scaffold
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+	"sort"
+	"strings"
+)
 
 const (
-	ModuleTypeBackend  = "backend"
-	ModuleTypeFrontend = "frontend"
+	ModuleTypeBackend    = "backend"
+	ModuleTypeFrontend   = "frontend"
+	TemplateKratos       = "kratos"
+	TemplateConsoleReact = "console-react"
 
 	RegistryFileName       = "freevibe.modules.yaml"
 	DefaultTemplateRepoURL = "https://github.com/richer421/free-vibe.git"
-	DefaultTemplateSubdir  = "templates/kratos"
 )
 
 var moduleNamePattern = regexp.MustCompile(`^[^\s/\\]+$`)
+
+type TemplateSpec struct {
+	Name              string
+	Subdir            string
+	DefaultModuleType string
+}
+
+var templateSpecs = map[string]TemplateSpec{
+	TemplateKratos: {
+		Name:              TemplateKratos,
+		Subdir:            "templates/kratos",
+		DefaultModuleType: ModuleTypeBackend,
+	},
+	TemplateConsoleReact: {
+		Name:              TemplateConsoleReact,
+		Subdir:            "templates/console-react",
+		DefaultModuleType: ModuleTypeFrontend,
+	},
+}
 
 type PromptFunc func(repoURL, defaultBranch string) (bool, error)
 
@@ -32,6 +57,7 @@ type InitOptions struct {
 	ProjectPath     string
 	ModuleName      string
 	RepoURL         string
+	Template        string
 	TemplateRepoURL string
 	Prompt          PromptFunc
 }
@@ -41,6 +67,7 @@ type AddOptions struct {
 	Type            string
 	RepoURL         string
 	ProjectName     string
+	Template        string
 	TemplateRepoURL string
 	Prompt          PromptFunc
 }
@@ -48,4 +75,33 @@ type AddOptions struct {
 type renderData struct {
 	ProjectName string
 	ModuleName  string
+}
+
+func ListTemplates() []string {
+	names := make([]string, 0, len(templateSpecs))
+	for name := range templateSpecs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func ResolveTemplate(name string) (TemplateSpec, error) {
+	key := strings.TrimSpace(name)
+	if key == "" {
+		return TemplateSpec{}, fmt.Errorf("template is required")
+	}
+	spec, ok := templateSpecs[key]
+	if !ok {
+		return TemplateSpec{}, fmt.Errorf("unknown template: %s (run `freevibe template ls` to view available templates)", key)
+	}
+	return spec, nil
+}
+
+func ResolveTemplateSubdir(name string) (string, error) {
+	spec, err := ResolveTemplate(name)
+	if err != nil {
+		return "", err
+	}
+	return spec.Subdir, nil
 }

@@ -49,7 +49,7 @@ func ensureProjectReadme(projectRoot, projectName string) error {
 	if _, err := os.Stat(path); err == nil {
 		return nil
 	}
-	content := fmt.Sprintf("# %s\n\nManaged by FreeVibe CLI.\n\n- Add module: `freevibe add --repo <url>`\n- Remove module: `freevibe remove <module>`\n- Sync modules: `git submodule update --init --recursive`\n", projectName)
+	content := fmt.Sprintf("# %s\n\nManaged by FreeVibe CLI.\n\n- List templates: `freevibe template ls`\n- Add module: `freevibe add --template <name> --repo <url>`\n- Remove module: `freevibe remove <module>`\n- Sync modules: `git submodule update --init --recursive`\n", projectName)
 	return os.WriteFile(path, []byte(content), 0o644)
 }
 
