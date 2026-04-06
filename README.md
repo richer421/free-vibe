@@ -3,6 +3,7 @@
 FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
 - 以 `git submodule` 方式组织大项目模块
 - 以模板仓库作为脚手架来源，把代码初始化到目标模块仓库
+- 仓库根目录负责 CLI 与发布维护，Kratos 后端代码模板位于 `templates/kratos/`
 
 ## 快速开始
 
@@ -84,3 +85,8 @@ make build-cli
 # 运行帮助
 ./bin/freevibe --help
 ```
+
+仓库结构：
+
+- 根目录：`freevibe` CLI、发布脚本、仓库维护文件
+- `templates/kratos/`：Kratos 后端服务模板，生成模块代码时直接使用这个目录

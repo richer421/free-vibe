@@ -8,6 +8,7 @@ const (
 
 	RegistryFileName       = "freevibe.modules.yaml"
 	DefaultTemplateRepoURL = "https://github.com/richer421/free-vibe.git"
+	DefaultTemplateSubdir  = "templates/kratos"
 )
 
 var moduleNamePattern = regexp.MustCompile(`^[^\s/\\]+$`)

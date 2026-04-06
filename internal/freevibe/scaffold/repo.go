@@ -153,10 +153,15 @@ func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoU
 	if err := run("", "git", "clone", templateRepoURL, templateDir); err != nil {
 		return fmt.Errorf("clone template repo %s: %w", templateRepoURL, err)
 	}
-	if err := renderModule(templateDir, data); err != nil {
+
+	templateRoot, err := resolveTemplateRoot(templateDir)
+	if err != nil {
 		return err
 	}
-	if err := copyTree(templateDir, repoDir); err != nil {
+	if err := renderModule(templateRoot, data); err != nil {
+		return err
+	}
+	if err := copyTree(templateRoot, repoDir); err != nil {
 		return err
 	}
 
@@ -179,6 +184,18 @@ func bootstrapRepo(repoDir, defaultBranch string, hasCommits bool, templateRepoU
 		return err
 	}
 	return nil
+}
+
+func resolveTemplateRoot(templateRepoDir string) (string, error) {
+	templateSubdir := filepath.Join(templateRepoDir, DefaultTemplateSubdir)
+	if st, err := os.Stat(templateSubdir); err == nil && st.IsDir() {
+		return templateSubdir, nil
+	}
+
+	if st, err := os.Stat(templateRepoDir); err == nil && st.IsDir() {
+		return templateRepoDir, nil
+	}
+	return "", fmt.Errorf("template root not found in %s", templateRepoDir)
 }
 
 func checkoutBranch(repoDir, defaultBranch string, hasCommits bool) error {
