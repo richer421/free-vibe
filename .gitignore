@@ -31,7 +31,7 @@ Thumbs.db
 *.key
 *.log
 bin/
-freevibe
+/freevibe
 dist/
 
 # Develop tools

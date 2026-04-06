@@ -10,48 +10,35 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	addName     string
-	addType     string
-	addRepoURL  string
-	addNoRender bool
-)
+func newAddCmd() *cobra.Command {
+	var name string
+	var moduleType string
+	var repoURL string
 
-var addCmd = &cobra.Command{
-	Use:   "add",
-	Short: "Add a module",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		projectRoot, err := os.Getwd()
-		if err != nil {
-			return err
-		}
-		projectName := filepath.Base(projectRoot)
+	cmd := &cobra.Command{
+		Use:   "add",
+		Short: "Add a module",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			projectRoot, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			projectName := filepath.Base(projectRoot)
 
-		if addName == "" {
-			return fmt.Errorf("--name is required")
-		}
+			fmt.Printf("Adding module from repo: %s\n", repoURL)
+			return scaffold.AddModule(projectRoot, scaffold.AddOptions{
+				Name:        name,
+				Type:        moduleType,
+				RepoURL:     repoURL,
+				ProjectName: projectName,
+				Prompt:      scaffold.NewConsolePrompt(cmd.InOrStdin(), cmd.OutOrStdout()),
+			})
+		},
+	}
 
-		repoURL := addRepoURL
-		if repoURL == "" {
-			repoURL = scaffold.DefaultTemplateRepoURL
-		}
-
-		fmt.Printf("Adding module: %s (%s)\n", addName, addType)
-		return scaffold.AddModule(projectRoot, scaffold.AddOptions{
-			Name:        addName,
-			Type:        addType,
-			RepoURL:     repoURL,
-			ProjectName: projectName,
-			Render:      !addNoRender,
-		})
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().StringVar(&addName, "name", "", "Module name, for example: order-service")
-	addCmd.Flags().StringVar(&addType, "type", scaffold.ModuleTypeBackend, "Module type: backend/frontend")
-	addCmd.Flags().StringVar(&addRepoURL, "repo-url", "", "Module repository URL (default: FreeVibe template repo)")
-	addCmd.Flags().BoolVar(&addNoRender, "no-render", false, "Pull module only, skip render")
-	_ = addCmd.MarkFlagRequired("name")
+	cmd.Flags().StringVar(&name, "name", "", "Module name (defaults to repo name)")
+	cmd.Flags().StringVar(&moduleType, "type", scaffold.ModuleTypeBackend, "Module type: backend/frontend")
+	cmd.Flags().StringVar(&repoURL, "repo", "", "Target module repository URL")
+	_ = cmd.MarkFlagRequired("repo")
+	return cmd
 }

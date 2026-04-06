@@ -2,7 +2,7 @@
 
 FreeVibe 是一个后端基础模板仓库，并提供 `freevibe` CLI：
 - 以 `git submodule` 方式组织大项目模块
-- 从远程仓库拉取模板并进行基础渲染
+- 以模板仓库作为脚手架来源，把代码初始化到目标模块仓库
 
 ## 快速开始
 
@@ -23,8 +23,15 @@ freevibe version
 ### 3) 初始化一个父项目（submodule 结构）
 
 ```bash
-freevibe init my-monorepo --backend-name order-service
+freevibe init my-monorepo \
+  --backend-name order-service \
+  --repo https://github.com/<owner>/order-service.git
 ```
+
+说明：
+- `--repo` 必填，表示目标模块仓库
+- `--backend-name` 可选；不传时默认取仓库名
+- 目标仓库必须已存在
 
 初始化后会生成：
 - `freevibe.modules.yaml`：模块注册表
@@ -45,7 +52,10 @@ git submodule status
 freevibe version
 
 # 新增模块
-freevibe add --name payment-service --type backend
+freevibe add --repo https://github.com/<owner>/payment-service.git
+
+# 指定模块名
+freevibe add --name payment-service --repo https://github.com/<owner>/payment-service.git
 
 # 移除模块
 freevibe remove payment-service
