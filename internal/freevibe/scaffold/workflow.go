@@ -44,6 +44,15 @@ func InitProject(opts InitOptions) error {
 	if err := ensureProjectReadme(opts.ProjectPath, opts.ProjectName); err != nil {
 		return err
 	}
+	if err := ensureProjectKnowledge(opts.ProjectPath); err != nil {
+		return err
+	}
+	if err := ensureProjectCodex(opts.ProjectPath); err != nil {
+		return err
+	}
+	if err := ensureProjectAgents(opts.ProjectPath); err != nil {
+		return err
+	}
 	if err := generateRootMakefile(opts.ProjectPath); err != nil {
 		return err
 	}

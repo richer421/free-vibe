@@ -51,6 +51,8 @@ freevibe init my-monorepo \
 - `freevibe.modules.yaml`：模块注册表
 - `.gitmodules`：子模块定义
 - 根 `Makefile`：`modules/status/pull`
+- `knowledge/README.md`：父项目级知识入口
+- `.codex/skills/codex-submodule-worktree-best-practices/SKILL.md`：父项目级 submodule/worktree 流程 skill
 
 ### 5) 验证初始化
 

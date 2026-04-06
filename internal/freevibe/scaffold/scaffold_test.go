@@ -112,6 +112,189 @@ func TestInitProjectBootstrapsEmptyRepoUsingDerivedModuleName(t *testing.T) {
 	}
 }
 
+func TestInitProjectCreatesRootAgentsFile(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+	templateRepo := createTemplateRepo(t, tmpDir)
+	remoteRepo := createBareRepo(t, filepath.Join(tmpDir, "ops-service.git"))
+	setRemoteHead(t, remoteRepo, "main")
+	projectRoot := filepath.Join(tmpDir, "ops-parent")
+
+	err := InitProject(InitOptions{
+		ProjectName:     "ops-parent",
+		ProjectPath:     projectRoot,
+		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
+		TemplateRepoURL: templateRepo,
+	})
+	if err != nil {
+		t.Fatalf("InitProject error = %v", err)
+	}
+
+	agentsData, err := os.ReadFile(filepath.Join(projectRoot, "AGENTS.md"))
+	if err != nil {
+		t.Fatalf("read AGENTS: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"这是一个基于 submodule 形式管理的微服务 AI vibe coding 项目",
+		"这是父项目根仓库，不承载具体业务模块代码",
+		"先查看 `freevibe.modules.yaml` 和 `.gitmodules`",
+		"`knowledge/`",
+		".codex/skills/codex-submodule-worktree-best-practices/SKILL.md",
+		"进入对应子模块目录，并遵循该子模块自己的 `AGENTS.md` 与本地 `.codex` 约束",
+	} {
+		if !strings.Contains(string(agentsData), snippet) {
+			t.Fatalf("AGENTS missing %q:\n%s", snippet, agentsData)
+		}
+	}
+}
+
+func TestInitProjectCreatesRootKnowledgeDirectory(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+	templateRepo := createTemplateRepo(t, tmpDir)
+	remoteRepo := createBareRepo(t, filepath.Join(tmpDir, "user-service.git"))
+	setRemoteHead(t, remoteRepo, "main")
+	projectRoot := filepath.Join(tmpDir, "user-parent")
+
+	err := InitProject(InitOptions{
+		ProjectName:     "user-parent",
+		ProjectPath:     projectRoot,
+		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
+		TemplateRepoURL: templateRepo,
+	})
+	if err != nil {
+		t.Fatalf("InitProject error = %v", err)
+	}
+
+	knowledgeData, err := os.ReadFile(filepath.Join(projectRoot, "knowledge", "README.md"))
+	if err != nil {
+		t.Fatalf("read knowledge README: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"这是一个基于 submodule 形式管理的微服务 AI vibe coding 项目",
+		"根级 knowledge 用于沉淀父项目层面的业务背景、服务边界、跨模块协作约束和公共术语。",
+	} {
+		if !strings.Contains(string(knowledgeData), snippet) {
+			t.Fatalf("knowledge README missing %q:\n%s", snippet, knowledgeData)
+		}
+	}
+}
+
+func TestInitProjectCreatesRootCodexSkill(t *testing.T) {
+	t.Parallel()
+
+	tmpDir := t.TempDir()
+	templateRepo := createTemplateRepo(t, tmpDir)
+	remoteRepo := createBareRepo(t, filepath.Join(tmpDir, "workflow-service.git"))
+	setRemoteHead(t, remoteRepo, "main")
+	projectRoot := filepath.Join(tmpDir, "workflow-parent")
+
+	err := InitProject(InitOptions{
+		ProjectName:     "workflow-parent",
+		ProjectPath:     projectRoot,
+		RepoURL:         remoteRepo,
+		Template:        TemplateKratos,
+		TemplateRepoURL: templateRepo,
+	})
+	if err != nil {
+		t.Fatalf("InitProject error = %v", err)
+	}
+
+	skillData, err := os.ReadFile(filepath.Join(projectRoot, ".codex", "skills", "codex-submodule-worktree-best-practices", "SKILL.md"))
+	if err != nil {
+		t.Fatalf("read root codex skill: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"name: codex-submodule-worktree-best-practices",
+		"项目关键词约定",
+		"接收",
+		"子模块指针更新",
+	} {
+		if !strings.Contains(string(skillData), snippet) {
+			t.Fatalf("root codex skill missing %q:\n%s", snippet, skillData)
+		}
+	}
+}
+
+func TestRepositoryRootAgentsDescribesProject(t *testing.T) {
+	t.Parallel()
+
+	agentsPath := filepath.Join("..", "..", "..", "AGENTS.md")
+	agentsData, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read repository root AGENTS: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"这是一个基于 submodule 形式管理的微服务 AI vibe coding 项目",
+		"目标不是堆功能，而是在满足业务目标的前提下，交付简洁、优雅、可扩展、可验证的结果。",
+	} {
+		if !strings.Contains(string(agentsData), snippet) {
+			t.Fatalf("repository root AGENTS missing %q:\n%s", snippet, agentsData)
+		}
+	}
+}
+
+func TestRepositoryRootKnowledgeDirectoryExists(t *testing.T) {
+	t.Parallel()
+
+	knowledgePath := filepath.Join("..", "..", "..", "knowledge", "README.md")
+	knowledgeData, err := os.ReadFile(knowledgePath)
+	if err != nil {
+		t.Fatalf("read repository root knowledge README: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"这是一个基于 submodule 形式管理的微服务 AI vibe coding 项目",
+		"根级 knowledge 用于沉淀父项目层面的业务背景、服务边界、跨模块协作约束和公共术语。",
+	} {
+		if !strings.Contains(string(knowledgeData), snippet) {
+			t.Fatalf("repository root knowledge README missing %q:\n%s", snippet, knowledgeData)
+		}
+	}
+}
+
+func TestRepositoryRootCodexSkillExists(t *testing.T) {
+	t.Parallel()
+
+	skillPath := filepath.Join("..", "..", "..", ".codex", "skills", "codex-submodule-worktree-best-practices", "SKILL.md")
+	skillData, err := os.ReadFile(skillPath)
+	if err != nil {
+		t.Fatalf("read repository root codex skill: %v", err)
+	}
+
+	for _, snippet := range []string{
+		"name: codex-submodule-worktree-best-practices",
+		"分支统一",
+		"接收",
+	} {
+		if !strings.Contains(string(skillData), snippet) {
+			t.Fatalf("repository root codex skill missing %q:\n%s", snippet, skillData)
+		}
+	}
+}
+
+func TestRepositoryRootAgentsReferencesCodexSubmoduleSkill(t *testing.T) {
+	t.Parallel()
+
+	agentsPath := filepath.Join("..", "..", "..", "AGENTS.md")
+	agentsData, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read repository root AGENTS: %v", err)
+	}
+
+	if !strings.Contains(string(agentsData), ".codex/skills/codex-submodule-worktree-best-practices/SKILL.md") {
+		t.Fatalf("repository root AGENTS missing codex submodule skill reference:\n%s", agentsData)
+	}
+}
+
 func TestAddModuleAttachesExistingRepoWhenUserAnswersNo(t *testing.T) {
 	t.Parallel()
 
@@ -201,6 +384,26 @@ func TestAddModuleBootstrapsExistingRepoWhenUserAnswersYes(t *testing.T) {
 	}
 }
 
+func TestKratosTemplateAgentsConnectsLocalSkills(t *testing.T) {
+	t.Parallel()
+
+	agentsPath := filepath.Join("..", "..", "..", "templates", "kratos", "AGENTS.md")
+	agentsData, err := os.ReadFile(agentsPath)
+	if err != nil {
+		t.Fatalf("read kratos AGENTS: %v", err)
+	}
+
+	for _, snippet := range []string{
+		".codex/skills/free-vibe-coding-agent-core/SKILL.md",
+		".codex/skills/business-domain-expert/SKILL.md",
+		".codex/skills/kratos-layout-best-practices/SKILL.md",
+	} {
+		if !strings.Contains(string(agentsData), snippet) {
+			t.Fatalf("kratos AGENTS missing %q:\n%s", snippet, agentsData)
+		}
+	}
+}
+
 func createParentProject(t *testing.T, baseDir, name string) string {
 	t.Helper()
 
@@ -214,6 +417,15 @@ func createParentProject(t *testing.T, baseDir, name string) string {
 	}
 	if err := ensureProjectReadme(projectRoot, name); err != nil {
 		t.Fatalf("ensure README: %v", err)
+	}
+	if err := ensureProjectKnowledge(projectRoot); err != nil {
+		t.Fatalf("ensure knowledge: %v", err)
+	}
+	if err := ensureProjectCodex(projectRoot); err != nil {
+		t.Fatalf("ensure codex: %v", err)
+	}
+	if err := ensureProjectAgents(projectRoot); err != nil {
+		t.Fatalf("ensure AGENTS: %v", err)
 	}
 	if err := generateRootMakefile(projectRoot); err != nil {
 		t.Fatalf("generate Makefile: %v", err)

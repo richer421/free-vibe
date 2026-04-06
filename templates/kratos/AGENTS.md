@@ -1,5 +1,13 @@
 # AGENTS
 
+## Skill 使用要求
+
+1. 只要在这个模板内处理请求，必须先阅读并使用本地路由 skill：`.codex/skills/free-vibe-coding-agent-core/SKILL.md`
+2. 如果路由结果命中“新增业务模块 / 业务功能 / Kratos 架构分层 / 目录模块 / 重构评审实现”，必须继续使用本地 skills：
+   `.codex/skills/business-domain-expert/SKILL.md`
+   `.codex/skills/kratos-layout-best-practices/SKILL.md`
+3. 如果本地 skill 与通用工程习惯冲突，以本模板 local skills 为准；如果与用户最新指令冲突，以用户最新指令为准
+
 ## 角色定位
 
 你不只是一个完成 coding 任务的机器。你正在协助把当前项目做对、做好、做稳。  

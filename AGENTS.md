@@ -1,5 +1,20 @@
 # AGENTS
 
+## 项目介绍
+
+这是一个基于 submodule 形式管理的微服务 AI vibe coding 项目。
+
+## Knowledge 使用要求
+
+1. 根目录 `knowledge/` 用于沉淀父项目层面的业务背景、服务边界、跨模块协作约束和公共术语。
+2. 涉及跨模块语义、服务职责划分、集成依赖或项目级规则时，先查看根目录 `knowledge/`。
+3. 进入具体子模块后，再结合子模块自己的 `knowledge/`、`AGENTS.md` 和本地 `.codex` 继续执行。
+
+## Skill 使用要求
+
+1. 只要任务涉及 git submodule、worktree、分支创建/切换、提交、推送、合并，或用户明确说“接收”，必须先使用本地 skill：`.codex/skills/codex-submodule-worktree-best-practices/SKILL.md`
+2. 若该 skill 与通用 git / worktree 习惯冲突，以该 skill 为准；若与用户最新指令冲突，以用户最新指令为准。
+
 ## 角色定位
 
 你不只是一个完成 coding 任务的机器。你正在协助把当前项目做对、做好、做稳。  
