@@ -14,6 +14,7 @@ func newInitCmd() *cobra.Command {
 	var moduleName string
 	var repoURL string
 	var template string
+	var templateRepo string
 	var force bool
 
 	cmd := &cobra.Command{
@@ -41,12 +42,13 @@ func newInitCmd() *cobra.Command {
 
 			fmt.Printf("Initializing FreeVibe project: %s\n", projectName)
 			err = scaffold.InitProject(scaffold.InitOptions{
-				ProjectName: projectName,
-				ProjectPath: projectPath,
-				ModuleName:  moduleName,
-				RepoURL:     repoURL,
-				Template:    template,
-				Prompt:      scaffold.NewConsolePrompt(cmd.InOrStdin(), cmd.OutOrStdout()),
+				ProjectName:     projectName,
+				ProjectPath:     projectPath,
+				ModuleName:      moduleName,
+				RepoURL:         repoURL,
+				Template:        template,
+				TemplateRepoURL: templateRepo,
+				Prompt:          scaffold.NewConsolePrompt(cmd.InOrStdin(), cmd.OutOrStdout()),
 			})
 			if err != nil {
 				return err
@@ -62,6 +64,7 @@ func newInitCmd() *cobra.Command {
 	cmd.Flags().StringVar(&moduleName, "name", "", "Initial module name (defaults to repo name)")
 	cmd.Flags().StringVar(&repoURL, "repo", "", "Target module repository URL")
 	cmd.Flags().StringVar(&template, "template", "", "Template name")
+	cmd.Flags().StringVar(&templateRepo, "template-repo", "", "Template repository URL (defaults to official repo)")
 	cmd.Flags().BoolVarP(&force, "force", "f", false, "Continue even if target directory exists")
 	_ = cmd.MarkFlagRequired("repo")
 	_ = cmd.MarkFlagRequired("template")

@@ -18,8 +18,10 @@ func renderModule(modulePath string, data renderData) error {
 		"free-vibe-coding": data.ModuleName,
 	}
 
-	if err := renamePathsWithToken(modulePath, "free-vibe-coding", data.ModuleName); err != nil {
-		return err
+	for _, token := range []string{"free-vibe-coding", "__MODULE_NAME__"} {
+		if err := renamePathsWithToken(modulePath, token, data.ModuleName); err != nil {
+			return err
+		}
 	}
 
 	return filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
