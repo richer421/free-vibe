@@ -83,7 +83,7 @@ func AddModule(projectRoot string, opts AddOptions) error {
 	if moduleType == "" {
 		moduleType = templateSpec.DefaultModuleType
 	}
-	if moduleType != ModuleTypeBackend && moduleType != ModuleTypeFrontend {
+	if moduleType != ModuleTypeBackend && moduleType != ModuleTypeFrontend && moduleType != ModuleTypeTool {
 		return fmt.Errorf("unsupported module type: %s", moduleType)
 	}
 
