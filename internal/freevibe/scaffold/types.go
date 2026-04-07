@@ -10,7 +10,6 @@ import (
 const (
 	ModuleTypeBackend    = "backend"
 	ModuleTypeFrontend   = "frontend"
-	ModuleTypeTool       = "tool"
 	TemplateKratos       = "kratos"
 	TemplateConsoleReact = "console-react"
 	TemplatePythonTool   = "python-tool"
@@ -41,7 +40,7 @@ var templateSpecs = map[string]TemplateSpec{
 	TemplatePythonTool: {
 		Name:              TemplatePythonTool,
 		Subdir:            "templates/python-tool",
-		DefaultModuleType: ModuleTypeTool,
+		DefaultModuleType: TemplatePythonTool,
 	},
 }
 
@@ -82,6 +81,16 @@ type AddOptions struct {
 type renderData struct {
 	ProjectName string
 	ModuleName  string
+}
+
+// ValidModuleTypes returns the set of accepted module type strings, derived
+// from the DefaultModuleType of every registered template.
+func ValidModuleTypes() map[string]struct{} {
+	types := make(map[string]struct{})
+	for _, spec := range templateSpecs {
+		types[spec.DefaultModuleType] = struct{}{}
+	}
+	return types
 }
 
 func ListTemplates() []string {
