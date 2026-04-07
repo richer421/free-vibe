@@ -415,17 +415,8 @@ func createParentProject(t *testing.T, baseDir, name string) string {
 	if err := saveRegistry(projectRoot, Registry{Version: 1, Modules: []Module{}}); err != nil {
 		t.Fatalf("save registry: %v", err)
 	}
-	if err := ensureProjectReadme(projectRoot, name); err != nil {
-		t.Fatalf("ensure README: %v", err)
-	}
-	if err := ensureProjectKnowledge(projectRoot); err != nil {
-		t.Fatalf("ensure knowledge: %v", err)
-	}
-	if err := ensureProjectCodex(projectRoot); err != nil {
-		t.Fatalf("ensure codex: %v", err)
-	}
-	if err := ensureProjectAgents(projectRoot); err != nil {
-		t.Fatalf("ensure AGENTS: %v", err)
+	if err := copyParentTemplate(projectRoot, name); err != nil {
+		t.Fatalf("copy parent template: %v", err)
 	}
 	if err := generateRootMakefile(projectRoot); err != nil {
 		t.Fatalf("generate Makefile: %v", err)
