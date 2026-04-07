@@ -4,19 +4,19 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
-config = context.config
-if config.config_file_name:
-    fileConfig(config.config_file_name)
-
-# Import all models so Alembic can detect them.
+from __MODULE_NAME__.config import settings
 from __MODULE_NAME__.storage.models import Base  # noqa: E402
+
+alembic_config = context.config
+if alembic_config.config_file_name:
+    fileConfig(alembic_config.config_file_name)
 
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=config.get_main_option("sqlalchemy.url"),
+        url=settings.database.url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -26,7 +26,7 @@ def run_migrations_offline() -> None:
 
 
 async def run_migrations_online() -> None:
-    engine = create_async_engine(config.get_main_option("sqlalchemy.url"))
+    engine = create_async_engine(settings.database.url)
     async with engine.begin() as conn:
         await conn.run_sync(
             lambda sync_conn: context.configure(

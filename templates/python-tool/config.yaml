@@ -1,0 +1,9 @@
+database:
+  url: mysql+aiomysql://root:password@localhost:3306/__MODULE_NAME__
+
+redis:
+  url: redis://localhost:6379/0
+
+http:
+  host: 0.0.0.0
+  port: 8000

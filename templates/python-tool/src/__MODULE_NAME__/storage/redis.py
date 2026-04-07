@@ -9,7 +9,7 @@ def _get_client() -> Redis:
     global _client
     if _client is None:
         from ..config import settings
-        _client = Redis.from_url(settings.redis_url, decode_responses=True)
+        _client = Redis.from_url(settings.redis.url, decode_responses=True)
     return _client
 
 
