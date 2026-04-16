@@ -13,6 +13,7 @@ const (
 	TemplateKratos       = "kratos"
 	TemplateConsoleReact = "console-react"
 	TemplatePythonTool   = "python-tool"
+	TemplatePythonWeb    = "python-web"
 
 	RegistryFileName       = "freevibe.modules.yaml"
 	DefaultTemplateRepoURL = "https://github.com/richer421/free-vibe.git"
@@ -41,6 +42,11 @@ var templateSpecs = map[string]TemplateSpec{
 		Name:              TemplatePythonTool,
 		Subdir:            "templates/python-tool",
 		DefaultModuleType: TemplatePythonTool,
+	},
+	TemplatePythonWeb: {
+		Name:              TemplatePythonWeb,
+		Subdir:            "templates/python-web",
+		DefaultModuleType: ModuleTypeBackend,
 	},
 }
 

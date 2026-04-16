@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.ruff_cache/
+
+# uv / venv
+.venv/
+.uv/
+
+# Distribution
+dist/
+*.egg-info/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local config overrides
+config.local.yaml
+
+# IDE
+.idea/
+.vscode/

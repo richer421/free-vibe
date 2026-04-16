@@ -11,10 +11,6 @@ class DatabaseConfig(BaseModel):
     url: str = "mysql+aiomysql://root:password@localhost:3306/__MODULE_NAME__"
 
 
-class RedisConfig(BaseModel):
-    url: str = "redis://localhost:6379/0"
-
-
 class HttpConfig(BaseModel):
     host: str = "0.0.0.0"
     port: int = 8000
@@ -24,7 +20,6 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_nested_delimiter="__")
 
     database: DatabaseConfig = DatabaseConfig()
-    redis: RedisConfig = RedisConfig()
     http: HttpConfig = HttpConfig()
 
     @classmethod
@@ -34,8 +29,6 @@ class Settings(BaseSettings):
         env_settings: PydanticBaseSettingsSource,
         **kwargs,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        # Priority: env vars > config.yaml > defaults
-        # e.g. DATABASE__URL=mysql+aiomysql://... overrides config.yaml
         return (env_settings, YamlConfigSettingsSource(settings_cls, yaml_file="config.yaml"))
 
 

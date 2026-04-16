@@ -5,7 +5,7 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from __MODULE_NAME__.config import settings
-from __MODULE_NAME__.storage.models import Base  # noqa: E402
+from __MODULE_NAME__.storage.models import Base  # noqa: F401
 
 alembic_config = context.config
 if alembic_config.config_file_name:

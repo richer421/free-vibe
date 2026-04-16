@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastmcp import FastMCP
 
 from ..storage.db import get_db_session
@@ -7,12 +9,19 @@ from ..tools.registry import ToolContext, ToolDef, discover, get_registry
 _TOOLS_PACKAGE = "__MODULE_NAME__.tools"
 
 
-async def _build_context() -> ToolContext:
+@asynccontextmanager
+async def _build_context():
     db_gen = get_db_session()
-    redis_gen = get_redis_client()
-    db = await db_gen.__anext__()
-    redis = await redis_gen.__anext__()
-    return ToolContext(db=db, redis=redis)
+    try:
+        db = await db_gen.__anext__()
+        redis_gen = get_redis_client()
+        try:
+            redis = await redis_gen.__anext__()
+            yield ToolContext(db=db, redis=redis)
+        finally:
+            await redis_gen.aclose()
+    finally:
+        await db_gen.aclose()
 
 
 def _wrap(tool_def: ToolDef):
@@ -22,9 +31,9 @@ def _wrap(tool_def: ToolDef):
 
     async def wrapped(**kwargs):
         params = input_model(**kwargs)
-        ctx = await _build_context()
-        result = await fn(params, ctx)
-        return result.model_dump()
+        async with _build_context() as ctx:
+            result = await fn(params, ctx)
+            return result.model_dump()
 
     wrapped.__name__ = tool_def.name
     wrapped.__doc__ = tool_def.description

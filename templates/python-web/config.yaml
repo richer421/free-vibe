@@ -1,0 +1,6 @@
+database:
+  url: mysql+aiomysql://root:password@localhost:3306/__MODULE_NAME__
+
+http:
+  host: 0.0.0.0
+  port: 8000

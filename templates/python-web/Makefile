@@ -1,16 +1,10 @@
-.PHONY: install dev-http dev-mcp dev-cli migrate migrate-new test lint format infra-up infra-down
+.PHONY: install dev migrate migrate-new test lint format infra-up infra-down
 
 install:
 	uv sync
 
-dev-http:
-	uv run __MODULE_NAME__-http
-
-dev-mcp:
-	uv run __MODULE_NAME__-mcp
-
-dev-cli:
-	uv run __MODULE_NAME__ --help
+dev:
+	uv run __MODULE_NAME__
 
 migrate:
 	uv run alembic upgrade head
